@@ -1,0 +1,35 @@
+modLoader = "javafml"
+loaderVersion = "${loader_version_range}"
+license = "${mod_license}"
+
+[[mods]]
+modId = "${mod_id}"
+version = "${mod_version}"
+displayName = "${mod_name}"
+logoFile = "icon.png"
+description = '''
+Equip shulker boxes as accessories with a dedicated equipment belt.
+Open them with a keybind, switch between up to three with tabs.
+Right-click a held shulker to open it without placing.
+'''
+
+[[dependencies.${mod_id}]]
+    modId = "neoforge"
+    type = "required"
+    versionRange = "[21.1.219,)"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "minecraft"
+    type = "required"
+    versionRange = "${minecraft_version_range}"
+    ordering = "NONE"
+    side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "accessories"
+    type = "required"
+    versionRange = "[1.1.0-beta,)"
+    ordering = "AFTER"
+    side = "BOTH"

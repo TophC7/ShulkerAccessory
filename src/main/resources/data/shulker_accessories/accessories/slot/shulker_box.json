@@ -1,0 +1,10 @@
+{
+    "replace": false,
+    "amount": 3,
+    "operation": "set",
+    "order": 1001,
+    "icon": "shulker_accessories:gui/slot/shulker_box",
+    "validators": [
+        "accessories:tag"
+    ]
+}
