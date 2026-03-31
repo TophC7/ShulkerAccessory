@@ -2,11 +2,10 @@ package dev.shulkeraccessories.client;
 
 import dev.shulkeraccessories.OpenShulkerPayload;
 import dev.shulkeraccessories.ShulkerAccessoriesMod;
+import dev.shulkeraccessories.SophisticatedCompat;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
-import net.minecraft.world.level.block.Block;
-import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
@@ -36,6 +35,11 @@ public class ClientSetup {
         @SubscribeEvent
         public static void onRegisterScreens(RegisterMenuScreensEvent event) {
             event.register(ShulkerAccessoriesMod.SHULKER_MENU.get(), ShulkerAccessoryScreen::new);
+
+            // register SS compat screen (only if SS is loaded)
+            if (SophisticatedCompat.isLoaded()) {
+                dev.shulkeraccessories.compat.ss.SSMenuCompat.registerScreen(event);
+            }
         }
     }
 
@@ -53,8 +57,7 @@ public class ClientSetup {
                 var cap = AccessoriesCapability.get(mc.player);
                 if (cap == null) continue;
 
-                boolean hasShulker = cap.isEquipped(stack ->
-                        Block.byItem(stack.getItem()) instanceof ShulkerBoxBlock);
+                boolean hasShulker = cap.isEquipped(ShulkerAccessoriesMod::isShulkerBox);
                 if (hasShulker) {
                     PacketDistributor.sendToServer(new OpenShulkerPayload());
                 }

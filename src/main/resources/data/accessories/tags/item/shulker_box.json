@@ -17,6 +17,30 @@
         "minecraft:brown_shulker_box",
         "minecraft:green_shulker_box",
         "minecraft:red_shulker_box",
-        "minecraft:black_shulker_box"
+        "minecraft:black_shulker_box",
+        {
+            "id": "sophisticatedstorage:shulker_box",
+            "required": false
+        },
+        {
+            "id": "sophisticatedstorage:copper_shulker_box",
+            "required": false
+        },
+        {
+            "id": "sophisticatedstorage:iron_shulker_box",
+            "required": false
+        },
+        {
+            "id": "sophisticatedstorage:gold_shulker_box",
+            "required": false
+        },
+        {
+            "id": "sophisticatedstorage:diamond_shulker_box",
+            "required": false
+        },
+        {
+            "id": "sophisticatedstorage:netherite_shulker_box",
+            "required": false
+        }
     ]
 }

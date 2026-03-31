@@ -11,6 +11,7 @@ description = '''
 Equip shulker boxes as accessories with a dedicated equipment belt.
 Open them with a keybind, switch between up to three with tabs.
 Right-click a held shulker to open it without placing.
+Supports Sophisticated Storage shulker boxes.
 '''
 
 [[dependencies.${mod_id}]]
@@ -31,5 +32,12 @@ Right-click a held shulker to open it without placing.
     modId = "accessories"
     type = "required"
     versionRange = "[1.1.0-beta,)"
+    ordering = "AFTER"
+    side = "BOTH"
+
+[[dependencies.${mod_id}]]
+    modId = "sophisticatedstorage"
+    type = "optional"
+    versionRange = "[1.5,)"
     ordering = "AFTER"
     side = "BOTH"

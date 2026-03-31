@@ -2,6 +2,7 @@ package dev.shulkeraccessories.client;
 
 import dev.shulkeraccessories.ShulkerAccessoriesMod;
 import dev.shulkeraccessories.ShulkerAccessoryMenu;
+import dev.shulkeraccessories.SophisticatedCompat;
 import dev.shulkeraccessories.SwitchShulkerTabPayload;
 import io.wispforest.accessories.api.AccessoriesCapability;
 import net.minecraft.client.Minecraft;
@@ -21,12 +22,16 @@ import java.util.List;
 
 public class ShulkerAccessoryScreen extends AbstractContainerScreen<ShulkerAccessoryMenu> {
 
-    private static final ResourceLocation TEXTURE =
+    // vanilla shulker box texture (3 rows)
+    private static final ResourceLocation TEXTURE_SHULKER =
             ResourceLocation.withDefaultNamespace("textures/gui/container/shulker_box.png");
+
+    // generic chest texture (supports tiling for variable rows)
+    private static final ResourceLocation TEXTURE_GENERIC =
+            ResourceLocation.withDefaultNamespace("textures/gui/container/generic_54.png");
 
     // VANILLA TAB SPRITES //
 
-    // NOTE: vanilla creative tab sprites — position 1 = leftmost, 2+ = middle
     private static final ResourceLocation[] SELECTED_TABS = {
             ResourceLocation.withDefaultNamespace("container/creative_inventory/tab_top_selected_1"),
             ResourceLocation.withDefaultNamespace("container/creative_inventory/tab_top_selected_2"),
@@ -48,11 +53,16 @@ public class ShulkerAccessoryScreen extends AbstractContainerScreen<ShulkerAcces
 
     private final List<TabInfo> tabs = new ArrayList<>();
     private final float[] containerTint;
+    private final boolean useGenericTexture;
 
     public ShulkerAccessoryScreen(ShulkerAccessoryMenu menu, Inventory playerInv, Component title) {
         super(menu, playerInv, title);
-        this.imageHeight = 166;
+        int rows = menu.getContainerRows();
+        this.useGenericTexture = rows != 3;
         this.imageWidth = 176;
+        // vanilla shulker_box.png is 166px, generic chest uses formula
+        this.imageHeight = useGenericTexture ? (114 + rows * 18) : 166;
+        this.inventoryLabelY = useGenericTexture ? (rows * 18 + 1) : 73;
         this.containerTint = computeTint(menu.getDyeColorId(), 0.4f);
     }
 
@@ -79,7 +89,7 @@ public class ShulkerAccessoryScreen extends AbstractContainerScreen<ShulkerAcces
         for (int i = 0; i < shulkerContainer.getSize(); i++) {
             ItemStack stack = shulkerContainer.getAccessories().getItem(i);
             if (ShulkerAccessoriesMod.isShulkerBox(stack)) {
-                DyeColor color = ShulkerBoxBlock.getColorFromItem(stack.getItem());
+                DyeColor color = getShulkerColor(stack);
                 tabs.add(new TabInfo(i, color, stack.copy(), computeTint(color, 0.5f)));
             }
         }
@@ -90,14 +100,35 @@ public class ShulkerAccessoryScreen extends AbstractContainerScreen<ShulkerAcces
         }
     }
 
+    /** Get the DyeColor for a shulker — works for vanilla, returns null for SS. */
+    @Nullable
+    private static DyeColor getShulkerColor(ItemStack stack) {
+        if (SophisticatedCompat.isSSShulkerBox(stack)) return null;
+        return ShulkerBoxBlock.getColorFromItem(stack.getItem());
+    }
+
     // RENDERING //
 
     @Override
     protected void renderBg(GuiGraphics graphics, float partialTick, int mouseX, int mouseY) {
-        // tint the container background with the active shulker's color
         float[] rgb = containerTint;
         graphics.setColor(rgb[0], rgb[1], rgb[2], 1.0f);
-        graphics.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+
+        if (useGenericTexture) {
+            // tile the generic chest texture for variable row counts
+            int rows = menu.getContainerRows();
+            // top section: title bar + slot rows (tile row from y=17 in texture)
+            graphics.blit(TEXTURE_GENERIC, leftPos, topPos, 0, 0, imageWidth, 17);
+            for (int row = 0; row < rows; row++) {
+                graphics.blit(TEXTURE_GENERIC, leftPos, topPos + 17 + row * 18, 0, 17, imageWidth, 18);
+            }
+            // bottom section: player inventory (96px from y=126 in texture)
+            graphics.blit(TEXTURE_GENERIC, leftPos, topPos + 17 + rows * 18, 0, 126, imageWidth, 96);
+        } else {
+            // vanilla 3-row shulker box texture
+            graphics.blit(TEXTURE_SHULKER, leftPos, topPos, 0, 0, imageWidth, imageHeight);
+        }
+
         graphics.setColor(1.0f, 1.0f, 1.0f, 1.0f);
     }
 

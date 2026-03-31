@@ -14,6 +14,10 @@ repositories {
     maven { url = 'https://maven.wispforest.io/releases' }
     maven { url = 'https://maven.su5ed.dev/releases' }
     maven { url = 'https://maven.fabricmc.net' }
+    maven {
+        url = 'https://api.modrinth.com/maven'
+        content { includeGroup 'maven.modrinth' }
+    }
 }
 
 neoForge {
@@ -54,6 +58,10 @@ sourceSets.main.resources.srcDir 'src/generated/resources'
 
 dependencies {
     implementation "io.wispforest:accessories-neoforge:${project.accessories_version}"
+
+    // optional compile-only deps for Sophisticated Storage compat (not bundled at runtime)
+    compileOnly "maven.modrinth:sophisticated-core:${project.sophisticated_core_version}"
+    compileOnly "maven.modrinth:sophisticated-storage:${project.sophisticated_storage_version}"
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {

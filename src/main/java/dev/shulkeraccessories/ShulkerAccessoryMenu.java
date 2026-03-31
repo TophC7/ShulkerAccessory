@@ -7,7 +7,6 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.ClickType;
-import net.minecraft.world.inventory.ShulkerBoxSlot;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
@@ -20,9 +19,9 @@ import javax.annotation.Nullable;
  */
 public class ShulkerAccessoryMenu extends AbstractContainerMenu {
 
-    public static final int CONTAINER_SIZE = 27;
-
     private final SimpleContainer container;
+    private final int containerSize;
+    private final int containerRows;
     private final int sourceSlot;
     private final boolean fromAccessory;
     private final int dyeColorId;
@@ -39,30 +38,41 @@ public class ShulkerAccessoryMenu extends AbstractContainerMenu {
                                  @Nullable ItemStack sourceStackRef) {
         super(ShulkerAccessoriesMod.SHULKER_MENU.get(), containerId);
         this.container = container;
+        this.containerSize = container.getContainerSize();
+        this.containerRows = (containerSize + 8) / 9; // round up to full rows
         this.sourceSlot = sourceSlot;
         this.fromAccessory = fromAccessory;
         this.dyeColorId = dyeColorId;
         this.sourceStackRef = sourceStackRef;
 
         // lock the hand-held shulker's hotbar slot to prevent moving it
+        int hotbarMenuStart = containerSize + 27;
         this.lockedMenuIndex = (!fromAccessory && sourceSlot >= 0 && sourceSlot <= 8)
-                ? 54 + sourceSlot : -1;
+                ? hotbarMenuStart + sourceSlot : -1;
 
         container.startOpen(playerInv.player);
 
-        // shulker slots: 3 rows of 9
-        for (int row = 0; row < 3; row++) {
+        // slot y-positions: vanilla shulker (3 rows) uses its own layout,
+        // everything else uses the generic chest formula
+        int playerInvY = (containerRows == 3) ? 84 : containerRows * 18 + 31;
+        int hotbarY = (containerRows == 3) ? 142 : containerRows * 18 + 89;
+
+        // container slots: variable rows of 9
+        for (int row = 0; row < containerRows; row++) {
             for (int col = 0; col < 9; col++) {
-                addSlot(new ShulkerBoxSlot(
-                        container, col + row * 9, 8 + col * 18, 18 + row * 18));
+                int slotIdx = col + row * 9;
+                if (slotIdx < containerSize) {
+                    addSlot(new NoShulkerSlot(
+                            container, slotIdx, 8 + col * 18, 18 + row * 18));
+                }
             }
         }
 
-        // player inventory: 3 rows of 9
+        // player inventory: y position adapts to container height
         for (int row = 0; row < 3; row++) {
             for (int col = 0; col < 9; col++) {
                 addSlot(new Slot(
-                        playerInv, col + row * 9 + 9, 8 + col * 18, 84 + row * 18));
+                        playerInv, col + row * 9 + 9, 8 + col * 18, playerInvY + row * 18));
             }
         }
 
@@ -70,18 +80,26 @@ public class ShulkerAccessoryMenu extends AbstractContainerMenu {
         for (int col = 0; col < 9; col++) {
             int invSlot = col;
             if (!fromAccessory && invSlot == sourceSlot) {
-                addSlot(new LockedSlot(playerInv, invSlot, 8 + col * 18, 142));
+                addSlot(new LockedSlot(playerInv, invSlot, 8 + col * 18, hotbarY));
             } else {
-                addSlot(new Slot(playerInv, invSlot, 8 + col * 18, 142));
+                addSlot(new Slot(playerInv, invSlot, 8 + col * 18, hotbarY));
             }
         }
     }
 
     // CLIENT //
 
-    public ShulkerAccessoryMenu(int containerId, Inventory playerInv, FriendlyByteBuf buf) {
-        this(containerId, playerInv, new SimpleContainer(CONTAINER_SIZE),
-                buf.readVarInt(), buf.readBoolean(), buf.readVarInt(), null);
+    // max slots: 15 rows * 9 cols (netherite SS shulker)
+    private static final int MAX_CONTAINER_SIZE = 135;
+
+    /** Client-side factory — reads all fields from the network buffer in wire order. */
+    public static ShulkerAccessoryMenu fromNetwork(int containerId, Inventory playerInv, FriendlyByteBuf buf) {
+        int sourceSlot = buf.readVarInt();
+        boolean fromAccessory = buf.readBoolean();
+        int dyeColorId = buf.readVarInt();
+        int size = Math.clamp(buf.readVarInt(), 1, MAX_CONTAINER_SIZE);
+        return new ShulkerAccessoryMenu(containerId, playerInv,
+                new SimpleContainer(size), sourceSlot, fromAccessory, dyeColorId, null);
     }
 
     // ACCESSORS //
@@ -89,6 +107,8 @@ public class ShulkerAccessoryMenu extends AbstractContainerMenu {
     public int getSourceSlot() { return sourceSlot; }
     public boolean isFromAccessory() { return fromAccessory; }
     public int getDyeColorId() { return dyeColorId; }
+    public int getContainerSize() { return containerSize; }
+    public int getContainerRows() { return containerRows; }
 
     // VALIDATION //
 
@@ -139,7 +159,7 @@ public class ShulkerAccessoryMenu extends AbstractContainerMenu {
     }
 
     private void dropAll(Player player) {
-        for (int i = 0; i < CONTAINER_SIZE; i++) {
+        for (int i = 0; i < containerSize; i++) {
             ItemStack item = container.getItem(i);
             if (!item.isEmpty()) {
                 player.drop(item, false);
@@ -186,14 +206,14 @@ public class ShulkerAccessoryMenu extends AbstractContainerMenu {
             ItemStack stackInSlot = slot.getItem();
             result = stackInSlot.copy();
 
-            if (index < CONTAINER_SIZE) {
+            if (index < containerSize) {
                 // from shulker → player inventory
-                if (!moveItemStackTo(stackInSlot, CONTAINER_SIZE, slots.size(), true)) {
+                if (!moveItemStackTo(stackInSlot, containerSize, slots.size(), true)) {
                     return ItemStack.EMPTY;
                 }
             } else {
                 // from player inventory → shulker
-                if (!moveItemStackTo(stackInSlot, 0, CONTAINER_SIZE, false)) {
+                if (!moveItemStackTo(stackInSlot, 0, containerSize, false)) {
                     return ItemStack.EMPTY;
                 }
             }
@@ -208,7 +228,19 @@ public class ShulkerAccessoryMenu extends AbstractContainerMenu {
         return result;
     }
 
-    // LOCKED SLOT //
+    // SLOT TYPES //
+
+    /** Container slot that blocks shulker box nesting (vanilla + SS). */
+    private static class NoShulkerSlot extends Slot {
+        public NoShulkerSlot(net.minecraft.world.Container container, int slot, int x, int y) {
+            super(container, slot, x, y);
+        }
+
+        @Override
+        public boolean mayPlace(ItemStack stack) {
+            return !ShulkerAccessoriesMod.isShulkerBox(stack);
+        }
+    }
 
     /** Prevents all item interaction — used for the hand-held shulker's source slot. */
     private static class LockedSlot extends Slot {

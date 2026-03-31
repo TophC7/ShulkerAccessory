@@ -22,6 +22,7 @@ import net.neoforged.bus.api.IEventBus;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.event.entity.player.PlayerInteractEvent;
 import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
@@ -51,15 +52,27 @@ public class ShulkerAccessoriesMod {
 
     public static final Supplier<MenuType<ShulkerAccessoryMenu>> SHULKER_MENU =
             MENU_TYPES.register("shulker_box",
-                    () -> IMenuTypeExtension.create(ShulkerAccessoryMenu::new));
+                    () -> IMenuTypeExtension.create(ShulkerAccessoryMenu::fromNetwork));
 
     public ShulkerAccessoriesMod(IEventBus modEventBus) {
         LOGGER.info("Shulker Accessories loaded");
 
         MENU_TYPES.register(modEventBus);
         modEventBus.addListener(this::registerPayloads);
+        modEventBus.addListener(this::onCommonSetup);
 
+        SophisticatedCompat.init();
         registerShulkerAccessories();
+
+        // register SS compat menu type (only if SS is loaded — class is never touched otherwise)
+        if (SophisticatedCompat.isLoaded()) {
+            dev.shulkeraccessories.compat.ss.SSMenuCompat.register(modEventBus);
+        }
+    }
+
+    private void onCommonSetup(FMLCommonSetupEvent event) {
+        // SS items are registered by now — safe to look them up and register as accessories
+        event.enqueueWork(SophisticatedCompat::registerAccessories);
     }
 
     private static void registerShulkerAccessories() {
@@ -126,8 +139,15 @@ public class ShulkerAccessoriesMod {
 
         if (slotIndex < 0) return;
 
+        // SS shulkers get their native UI with upgrades and settings
+        if (SophisticatedCompat.isSSShulkerBox(shulkerStack)) {
+            dev.shulkeraccessories.compat.ss.SSMenuCompat.openFromAccessory(player, slotIndex, shulkerStack);
+            return;
+        }
+
         SimpleContainer container = loadContents(shulkerStack);
         int colorId = getColorId(shulkerStack);
+        int containerSize = container.getContainerSize();
         final int finalSlot = slotIndex;
         final ItemStack stackRef = shulkerStack;
 
@@ -139,6 +159,7 @@ public class ShulkerAccessoriesMod {
             buf.writeVarInt(finalSlot);
             buf.writeBoolean(true);
             buf.writeVarInt(colorId);
+            buf.writeVarInt(containerSize);
         });
     }
 
@@ -148,12 +169,19 @@ public class ShulkerAccessoriesMod {
         if (!isShulkerBox(held)) return;
         if (player.containerMenu instanceof ShulkerAccessoryMenu) return;
 
+        // SS shulkers get their native UI with upgrades and settings
+        if (SophisticatedCompat.isSSShulkerBox(held)) {
+            dev.shulkeraccessories.compat.ss.SSMenuCompat.openFromHand(player, hand);
+            return;
+        }
+
         int slot = (hand == InteractionHand.MAIN_HAND)
                 ? player.getInventory().selected
                 : 40;
 
         SimpleContainer container = loadContents(held);
         int colorId = getColorId(held);
+        int containerSize = container.getContainerSize();
 
         player.openMenu(new SimpleMenuProvider(
                 (containerId, inv, p) -> new ShulkerAccessoryMenu(
@@ -163,16 +191,19 @@ public class ShulkerAccessoriesMod {
             buf.writeVarInt(slot);
             buf.writeBoolean(false);
             buf.writeVarInt(colorId);
+            buf.writeVarInt(containerSize);
         });
     }
 
     // HELPERS //
 
     public static boolean isShulkerBox(ItemStack stack) {
-        return !stack.isEmpty() && Block.byItem(stack.getItem()) instanceof ShulkerBoxBlock;
+        if (stack.isEmpty()) return false;
+        if (Block.byItem(stack.getItem()) instanceof ShulkerBoxBlock) return true;
+        return SophisticatedCompat.isSSShulkerBox(stack);
     }
 
-    /** Load a shulker item's contents into a live container. */
+    /** Load a vanilla shulker item's contents into a live container. SS shulkers use SSMenuCompat. */
     public static SimpleContainer loadContents(ItemStack shulkerStack) {
         SimpleContainer container = new SimpleContainer(27);
         ItemContainerContents contents = shulkerStack.get(DataComponents.CONTAINER);
@@ -186,10 +217,11 @@ public class ShulkerAccessoriesMod {
         return container;
     }
 
-    /** Save a live container back into a shulker item's component data. */
+    /** Save a live container back into a vanilla shulker item's component data. */
     public static void saveContents(ItemStack shulkerStack, SimpleContainer container) {
-        NonNullList<ItemStack> items = NonNullList.withSize(27, ItemStack.EMPTY);
-        for (int i = 0; i < 27; i++) {
+        int size = container.getContainerSize();
+        NonNullList<ItemStack> items = NonNullList.withSize(size, ItemStack.EMPTY);
+        for (int i = 0; i < size; i++) {
             items.set(i, container.getItem(i));
         }
         shulkerStack.set(DataComponents.CONTAINER, ItemContainerContents.fromItems(items));
