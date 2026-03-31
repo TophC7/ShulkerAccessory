@@ -29,7 +29,8 @@ public class ItemStorageContainerMenu extends StorageContainerMenuBase<IStorageW
     private final int sourceSlot;
     private final boolean fromAccessory;
 
-    // reference to the exact ItemStack we opened — used for tamper detection
+    // reference to the exact ItemStack we opened
+    // used for tamper detection
     private final @Nullable ItemStack sourceStackRef;
 
     // SERVER //

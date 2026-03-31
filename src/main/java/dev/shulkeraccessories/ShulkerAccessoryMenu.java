@@ -27,7 +27,8 @@ public class ShulkerAccessoryMenu extends AbstractContainerMenu {
     private final int dyeColorId;
     private final int lockedMenuIndex;
 
-    // the exact ItemStack we opened — used to verify the slot wasn't tampered with on save
+    // the exact ItemStack we opened
+    // used to verify the slot wasn't tampered with on save
     private final @Nullable ItemStack sourceStackRef;
 
     // SERVER //
@@ -92,7 +93,7 @@ public class ShulkerAccessoryMenu extends AbstractContainerMenu {
     // max slots: 15 rows * 9 cols (netherite SS shulker)
     private static final int MAX_CONTAINER_SIZE = 135;
 
-    /** Client-side factory — reads all fields from the network buffer in wire order. */
+    /** A Client-side factory that reads all fields from the network buffer in wire order. */
     public static ShulkerAccessoryMenu fromNetwork(int containerId, Inventory playerInv, FriendlyByteBuf buf) {
         int sourceSlot = buf.readVarInt();
         boolean fromAccessory = buf.readBoolean();
@@ -242,7 +243,7 @@ public class ShulkerAccessoryMenu extends AbstractContainerMenu {
         }
     }
 
-    /** Prevents all item interaction — used for the hand-held shulker's source slot. */
+    /** This Prevents all item interaction; used for the hand-held shulker's source slot. */
     private static class LockedSlot extends Slot {
         public LockedSlot(net.minecraft.world.Container container, int slot, int x, int y) {
             super(container, slot, x, y);

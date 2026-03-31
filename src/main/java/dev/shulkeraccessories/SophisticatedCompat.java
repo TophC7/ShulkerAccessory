@@ -42,7 +42,7 @@ public class SophisticatedCompat {
             loaded = true;
             ShulkerAccessoriesMod.LOGGER.info("Sophisticated Storage compat initialized");
         } catch (Exception e) {
-            ShulkerAccessoriesMod.LOGGER.error("Failed to init Sophisticated Storage compat — "
+            ShulkerAccessoriesMod.LOGGER.error("Failed to init Sophisticated Storage compat - "
                     + "SS may have changed its internal class names", e);
         }
     }

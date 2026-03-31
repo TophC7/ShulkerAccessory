@@ -64,19 +64,21 @@ public class ShulkerAccessoriesMod {
         SophisticatedCompat.init();
         registerShulkerAccessories();
 
-        // register SS compat menu type (only if SS is loaded — class is never touched otherwise)
+        // register SS compat menu type (if SS is loaded otherwise class is never touched)
         if (SophisticatedCompat.isLoaded()) {
             dev.shulkeraccessories.compat.ss.SSMenuCompat.register(modEventBus);
         }
     }
 
     private void onCommonSetup(FMLCommonSetupEvent event) {
-        // SS items are registered by now — safe to look them up and register as accessories
+        // SS items are registered
+        // Safe to look them up and register as accessories
         event.enqueueWork(SophisticatedCompat::registerAccessories);
     }
 
     private static void registerShulkerAccessories() {
-        // disable right-click-to-equip — we handle right-click ourselves to open the UI
+        // disable right-click-to-equip 
+        // We handle right-click ourselves to open the UI
         Accessory accessory = new Accessory() {
             @Override
             public boolean canEquipFromUse(ItemStack stack) {
