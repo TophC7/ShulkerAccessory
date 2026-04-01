@@ -8,6 +8,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.Block;
 import net.neoforged.fml.ModList;
 
+import java.util.List;
+
 /**
  * Lightweight compatibility layer for Sophisticated Storage.
  * Handles detection and accessory registration via reflection (no compile-time SS dependency).
@@ -20,16 +22,18 @@ public class SophisticatedCompat {
     // cached reflection target for SS shulker block detection
     private static Class<?> ssShulkerBlockClass;
 
-    private static final String[] SHULKER_IDS = {
+    private static final List<String> SHULKER_IDS = List.of(
             "sophisticatedstorage:shulker_box",
             "sophisticatedstorage:copper_shulker_box",
             "sophisticatedstorage:iron_shulker_box",
             "sophisticatedstorage:gold_shulker_box",
             "sophisticatedstorage:diamond_shulker_box",
-            "sophisticatedstorage:netherite_shulker_box",
-    };
+            "sophisticatedstorage:netherite_shulker_box"
+    );
 
     public static boolean isLoaded() { return loaded; }
+
+    public static List<String> getShulkerIds() { return SHULKER_IDS; }
 
     /** Initialize reflection targets. Call once during mod setup. */
     public static void init() {

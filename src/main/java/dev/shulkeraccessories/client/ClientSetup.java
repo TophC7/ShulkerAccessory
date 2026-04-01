@@ -4,11 +4,17 @@ import dev.shulkeraccessories.OpenShulkerPayload;
 import dev.shulkeraccessories.ShulkerAccessoriesMod;
 import dev.shulkeraccessories.SophisticatedCompat;
 import io.wispforest.accessories.api.AccessoriesCapability;
+import io.wispforest.accessories.api.client.AccessoriesRendererRegistry;
 import net.minecraft.client.KeyMapping;
 import net.minecraft.client.Minecraft;
+import net.minecraft.core.registries.BuiltInRegistries;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.DyeColor;
+import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
+import net.neoforged.fml.event.lifecycle.FMLClientSetupEvent;
 import net.neoforged.neoforge.client.event.ClientTickEvent;
 import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
@@ -39,6 +45,35 @@ public class ClientSetup {
             // register SS compat screen (only if SS is loaded)
             if (SophisticatedCompat.isLoaded()) {
                 dev.shulkeraccessories.compat.ss.SSMenuCompat.registerScreen(event);
+            }
+        }
+
+        @SubscribeEvent
+        public static void onClientSetup(FMLClientSetupEvent event) {
+            // enqueueWork for thread safety — FMLClientSetupEvent fires on a worker thread
+            event.enqueueWork(ClientSetup::registerRenderers);
+        }
+    }
+
+    // RENDERER REGISTRATION //
+
+    private static void registerRenderers() {
+        // vanilla shulkers (undyed + 16 colors)
+        AccessoriesRendererRegistry.registerRenderer(
+                ShulkerBoxBlock.getBlockByColor(null).asItem(),
+                () -> ShulkerAccessoryRenderer.INSTANCE);
+        for (DyeColor color : DyeColor.values()) {
+            AccessoriesRendererRegistry.registerRenderer(
+                    ShulkerBoxBlock.getBlockByColor(color).asItem(),
+                    () -> ShulkerAccessoryRenderer.INSTANCE);
+        }
+
+        // SS shulkers (if loaded)
+        if (SophisticatedCompat.isLoaded()) {
+            for (String id : SophisticatedCompat.getShulkerIds()) {
+                BuiltInRegistries.ITEM.getOptional(ResourceLocation.parse(id)).ifPresent(item ->
+                        AccessoriesRendererRegistry.registerRenderer(
+                                item, () -> ShulkerAccessoryRenderer.INSTANCE));
             }
         }
     }
