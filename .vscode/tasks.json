@@ -1,0 +1,64 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Run Client",
+      "type": "shell",
+      "command": "nix",
+      "args": [
+        "develop", "--command", "bash", "-c",
+        "gradle createLaunchScripts && bash build/moddev/runClient.sh"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    },
+    {
+      "label": "Run Server",
+      "type": "shell",
+      "command": "nix",
+      "args": [
+        "develop", "--command", "bash", "-c",
+        "gradle createLaunchScripts && bash build/moddev/runServer.sh"
+      ],
+      "group": "build",
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      }
+    },
+    {
+      "label": "Build JAR",
+      "type": "shell",
+      "command": "nix",
+      "args": ["develop", "--command", "gradle", "jar"],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": ["$gradle"],
+      "presentation": {
+        "reveal": "always",
+        "panel": "shared"
+      }
+    },
+    {
+      "label": "Compile",
+      "type": "shell",
+      "command": "nix",
+      "args": ["develop", "--command", "gradle", "compileJava"],
+      "group": "build",
+      "problemMatcher": ["$gradle"],
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared"
+      }
+    }
+  ]
+}

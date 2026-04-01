@@ -15,7 +15,6 @@ dist/
 
 # IDEs
 .idea/
-.vscode/
 *.swp
 *.swo
 *~
@@ -25,4 +24,5 @@ dist/
 .direnv/
 
 # Project specific
+run/
 .claude/
