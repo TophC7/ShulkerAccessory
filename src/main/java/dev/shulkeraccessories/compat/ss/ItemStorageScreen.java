@@ -4,44 +4,40 @@ import dev.shulkeraccessories.client.ShulkerTabOverlay;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import net.p3pp3rf1y.sophisticatedcore.client.gui.StorageScreenBase;
+import xyz.kwahson.core.compat.ss.SSItemStorageScreen;
 
 /**
- * Screen for item-based SS shulker boxes. Extends SS's base screen
- * to get full rendering with upgrades, sort buttons, etc.
- * Adds our shulker tab overlay for switching between equipped shulkers.
+ * Screen for the SS shulker accessory menu. Inherits the SS upgrade/sort/settings UI
+ * from the core base, then layers the per-mod tab overlay for switching between
+ * equipped accessory shulkers.
  */
-public class ItemStorageScreen extends StorageScreenBase<ItemStorageContainerMenu> {
-
+public class ItemStorageScreen extends SSItemStorageScreen<ItemStorageContainerMenu> {
     private final ShulkerTabOverlay tabOverlay;
 
     protected ItemStorageScreen(ItemStorageContainerMenu menu, Inventory playerInv, Component title) {
         super(menu, playerInv, title);
         this.tabOverlay = menu.isFromAccessory()
-                ? new ShulkerTabOverlay(menu.getSourceSlot()) : null;
+                ? new ShulkerTabOverlay(menu.getSourceSlot())
+                : null;
     }
 
-    public static ItemStorageScreen constructScreen(ItemStorageContainerMenu menu, Inventory playerInv, Component title) {
-        return new ItemStorageScreen(menu, playerInv, title);
-    }
-
-    @Override
-    protected String getStorageSettingsTabTooltip() {
-        return "gui.sophisticatedstorage.settings.tooltip";
-    }
+    public static ItemStorageScreen constructScreen(ItemStorageContainerMenu menu, Inventory playerInv, Component title) { return new ItemStorageScreen(menu, playerInv, title); }
 
     @Override
     protected void init() {
         super.init();
-        if (tabOverlay != null) tabOverlay.buildTabs();
+        if (tabOverlay != null)
+            tabOverlay.buildTabs();
     }
 
     @Override
     public void render(GuiGraphics graphics, int mouseX, int mouseY, float partialTick) {
-        if (tabOverlay != null) tabOverlay.renderUnselectedTabs(graphics, leftPos, topPos);
+        if (tabOverlay != null)
+            tabOverlay.renderUnselectedTabs(graphics, leftPos, topPos);
         super.render(graphics, mouseX, mouseY, partialTick);
-        if (tabOverlay != null) tabOverlay.renderSelectedTabAndTooltips(
-                graphics, leftPos, topPos, mouseX, mouseY, font);
+        if (tabOverlay != null)
+            tabOverlay.renderSelectedTabAndTooltips(
+                    graphics, leftPos, topPos, mouseX, mouseY, font);
     }
 
     @Override

@@ -11,3 +11,6 @@ plugins {
 }
 
 rootProject.name = 'shulker_accessories'
+
+// Composite build: resolve KwahsCore from source (no publishToMavenLocal needed)
+includeBuild('../KwahsCore')

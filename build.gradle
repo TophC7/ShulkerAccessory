@@ -10,6 +10,9 @@ group = mod_group_id
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
+// KwahsCore: srcDir for dev runtime (runClient), JarJar for production builds
+sourceSets.main.java.srcDir "${kwahscore_path}/src/main/java"
+
 repositories {
     maven { url = 'https://maven.wispforest.io/releases' }
     maven { url = 'https://maven.su5ed.dev/releases' }
@@ -63,6 +66,17 @@ dependencies {
     // optional compile-only deps for Sophisticated Storage compat (not bundled at runtime)
     compileOnly "maven.modrinth:sophisticated-core:${project.sophisticated_core_version}"
     compileOnly "maven.modrinth:sophisticated-storage:${project.sophisticated_storage_version}"
+
+    // KwahsCore: embed via JarJar for production (NeoForge dedups across mods at runtime).
+    // Minimum 0.3.0 because this mod uses xyz.kwahson.core.compat.ss.* added in that release.
+    jarJar("xyz.kwahson.core:kwahs_core:[0.3.0,1.0.0)") {
+        version { prefer '0.3.0' }
+    }
+}
+
+// KwahsCore classes are embedded as a nested jar via JarJar; exclude them from the main jar.
+tasks.named('jar', Jar) {
+    exclude 'xyz/kwahson/core/**'
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
