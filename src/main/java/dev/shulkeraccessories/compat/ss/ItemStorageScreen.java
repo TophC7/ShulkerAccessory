@@ -4,7 +4,7 @@ import dev.shulkeraccessories.client.ShulkerTabOverlay;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.entity.player.Inventory;
-import xyz.kwahson.core.compat.ss.SSItemStorageScreen;
+import xyz.kwahson.compat.ss.SSItemStorageScreen;
 
 /**
  * Screen for the SS shulker accessory menu. Inherits the SS upgrade/sort/settings UI

@@ -18,7 +18,7 @@ import net.neoforged.neoforge.client.event.RegisterKeyMappingsEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.network.PacketDistributor;
 import org.lwjgl.glfw.GLFW;
-import xyz.kwahson.core.compat.ss.SSCompat;
+import xyz.kwahson.compat.ss.SSCompat;
 
 public class ClientSetup {
     public static final KeyMapping OPEN_SHULKER_KEY = new KeyMapping(

@@ -29,7 +29,7 @@ import net.neoforged.neoforge.network.event.RegisterPayloadHandlersEvent;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import xyz.kwahson.core.compat.ss.SSCompat;
+import xyz.kwahson.compat.ss.SSCompat;
 
 import java.util.HashMap;
 import java.util.Map;

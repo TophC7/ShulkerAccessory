@@ -11,7 +11,7 @@ import net.minecraft.world.item.DyeColor;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.ShulkerBoxBlock;
 import net.neoforged.neoforge.network.PacketDistributor;
-import xyz.kwahson.core.compat.ss.SSCompat;
+import xyz.kwahson.compat.ss.SSCompat;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;

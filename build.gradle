@@ -10,8 +10,10 @@ group = mod_group_id
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-// KwahsCore: srcDir for dev runtime (runClient), JarJar for production builds
+// KwahsCore: srcDir for dev runtime (runClient), JarJar for production builds.
+// This mod uses the SS compat layer so we also pull in src/compat/java.
 sourceSets.main.java.srcDir "${kwahscore_path}/src/main/java"
+sourceSets.main.java.srcDir "${kwahscore_path}/src/compat/java"
 
 repositories {
     maven { url = 'https://maven.wispforest.io/releases' }
@@ -68,7 +70,7 @@ dependencies {
     compileOnly "maven.modrinth:sophisticated-storage:${project.sophisticated_storage_version}"
 
     // KwahsCore: embed via JarJar for production (NeoForge dedups across mods at runtime).
-    // Minimum 0.3.0 because this mod uses xyz.kwahson.core.compat.ss.* added in that release.
+    // Minimum 0.3.0 because this mod uses xyz.kwahson.compat.ss.* added in that release.
     jarJar("xyz.kwahson.core:kwahs_core:[0.3.0,1.0.0)") {
         version { prefer '0.3.0' }
     }

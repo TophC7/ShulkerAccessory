@@ -19,6 +19,9 @@ dist/
 *.swo
 *~
 .DS_Store
+.history/
+.vscode/launch.json
+.eclipse/
 
 # Nix
 .direnv/

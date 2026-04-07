@@ -11,8 +11,8 @@ import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.util.NoopStorageWrapper;
 import net.p3pp3rf1y.sophisticatedstorage.item.StackStorageWrapper;
-import xyz.kwahson.core.compat.ss.SSCompat;
-import xyz.kwahson.core.compat.ss.SSItemStorageMenu;
+import xyz.kwahson.compat.ss.SSCompat;
+import xyz.kwahson.compat.ss.SSItemStorageMenu;
 
 import javax.annotation.Nullable;
 
