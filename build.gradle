@@ -77,8 +77,9 @@ dependencies {
 }
 
 // KwahsCore classes are embedded as a nested jar via JarJar; exclude them from the main jar.
+// Covers both xyz/kwahson/core and xyz/kwahson/compat packages.
 tasks.named('jar', Jar) {
-    exclude 'xyz/kwahson/core/**'
+    exclude 'xyz/kwahson/**'
 }
 
 var generateModMetadata = tasks.register("generateModMetadata", ProcessResources) {
