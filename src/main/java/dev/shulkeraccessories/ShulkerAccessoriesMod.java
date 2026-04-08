@@ -61,10 +61,13 @@ public class ShulkerAccessoriesMod {
         modEventBus.addListener(this::onCommonSetup);
         SSCompat.init();
         registerVanillaShulkerAccessories();
-        // register SS compat menu type only if SS is loaded; gates the class from
-        // linking
+        // register SS compat menu type and upgrade ticker only if SS is loaded;
+        // gates the SS-touching classes from linking when SS is absent.
         if (SSCompat.isLoaded()) {
             dev.shulkeraccessories.compat.ss.SSMenuCompat.register(modEventBus);
+            // ticker hooks the game event bus, not the mod bus
+            dev.shulkeraccessories.compat.ss.SSAccessoryTicker.register(
+                    net.neoforged.neoforge.common.NeoForge.EVENT_BUS);
         }
     }
 
