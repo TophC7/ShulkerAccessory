@@ -12,7 +12,7 @@ import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.common.extensions.IMenuTypeExtension;
 import net.neoforged.neoforge.registries.DeferredRegister;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
-import net.p3pp3rf1y.sophisticatedstorage.item.StackStorageWrapper;
+import xyz.kwahson.compat.ss.SSPersistence;
 
 import java.util.function.Supplier;
 
@@ -35,7 +35,7 @@ public class SSMenuCompat {
 
     /** Open an SS shulker from an accessory slot. */
     public static void openFromAccessory(ServerPlayer player, int slotIndex, ItemStack shulkerStack) {
-        IStorageWrapper wrapper = StackStorageWrapper.fromStack(player.registryAccess(), shulkerStack);
+        IStorageWrapper wrapper = SSPersistence.createWrapper(player.registryAccess(), shulkerStack);
         player.openMenu(new SimpleMenuProvider(
                 (containerId, inv, p) -> new ItemStorageContainerMenu(
                         SS_SHULKER_MENU.get(), containerId, p, wrapper, slotIndex, true, shulkerStack),
@@ -51,7 +51,7 @@ public class SSMenuCompat {
         int slot = (hand == InteractionHand.MAIN_HAND)
                 ? player.getInventory().selected
                 : 40;
-        IStorageWrapper wrapper = StackStorageWrapper.fromStack(player.registryAccess(), held);
+        IStorageWrapper wrapper = SSPersistence.createWrapper(player.registryAccess(), held);
         player.openMenu(new SimpleMenuProvider(
                 (containerId, inv, p) -> new ItemStorageContainerMenu(
                         SS_SHULKER_MENU.get(), containerId, p, wrapper, slot, false, held),

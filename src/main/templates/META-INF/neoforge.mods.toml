@@ -13,31 +13,33 @@ Open them with a keybind, switch between up to three with tabs.
 Right-click a held shulker to open it without placing.
 Supports Sophisticated Storage shulker boxes.
 '''
+author = "Kwahson"
+displayURL = "https://github.com/tophc7/Excavate"
 
-[[dependencies.${mod_id}]]
-    modId = "neoforge"
-    type = "required"
-    versionRange = "[21.1.219,)"
-    ordering = "NONE"
-    side = "BOTH"
+[[dependencies."${mod_id}"]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.219,)"
+ordering = "NONE"
+side = "BOTH"
 
-[[dependencies.${mod_id}]]
-    modId = "minecraft"
-    type = "required"
-    versionRange = "${minecraft_version_range}"
-    ordering = "NONE"
-    side = "BOTH"
+[[dependencies."${mod_id}"]]
+modId = "minecraft"
+type = "required"
+versionRange = "${minecraft_version_range}"
+ordering = "NONE"
+side = "BOTH"
 
-[[dependencies.${mod_id}]]
-    modId = "accessories"
-    type = "required"
-    versionRange = "[1.1.0-beta,)"
-    ordering = "AFTER"
-    side = "BOTH"
+[[dependencies."${mod_id}"]]
+modId = "accessories"
+type = "required"
+versionRange = "[1.1.0-beta,)"
+ordering = "AFTER"
+side = "BOTH"
 
-[[dependencies.${mod_id}]]
-    modId = "sophisticatedstorage"
-    type = "optional"
-    versionRange = "[1.5,)"
-    ordering = "AFTER"
-    side = "BOTH"
+[[dependencies."${mod_id}"]]
+modId = "sophisticatedstorage"
+type = "optional"
+versionRange = "[1.5,)"
+ordering = "AFTER"
+side = "BOTH"

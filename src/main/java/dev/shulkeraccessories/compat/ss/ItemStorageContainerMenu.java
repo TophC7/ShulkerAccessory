@@ -10,8 +10,8 @@ import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.p3pp3rf1y.sophisticatedcore.api.IStorageWrapper;
 import net.p3pp3rf1y.sophisticatedcore.util.NoopStorageWrapper;
-import net.p3pp3rf1y.sophisticatedstorage.item.StackStorageWrapper;
 import xyz.kwahson.compat.ss.SSCompat;
+import xyz.kwahson.compat.ss.SSPersistence;
 import xyz.kwahson.compat.ss.SSItemStorageMenu;
 
 import javax.annotation.Nullable;
@@ -53,7 +53,7 @@ public class ItemStorageContainerMenu extends SSItemStorageMenu {
         ItemStack stack = getStackFromSlot(playerInv.player, sourceSlot, fromAccessory);
         IStorageWrapper wrapper;
         if (SSCompat.isSSShulkerBox(stack)) {
-            wrapper = StackStorageWrapper.fromStack(playerInv.player.registryAccess(), stack);
+            wrapper = SSPersistence.createWrapper(playerInv.player.registryAccess(), stack);
         } else {
             // fallback: client view of the source is stale. Server will sync real contents.
             wrapper = NoopStorageWrapper.INSTANCE;
