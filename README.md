@@ -14,7 +14,9 @@ Equip up to three shulker boxes as accessories and pop them open *wherever*, **w
 
 [Sophisticated Storage](https://modrinth.com/mod/sophisticated-storage) shulker boxes work in the accessory slots and open with their native UI, so you get full access to the inventory on the go.
 
-SS upgrades that depend on the shulker being a placed block (hoppers, magnets, automation) won't function while equipped. This is by design; this mod is meant to give you portable storage access, not replace the need to place your shulker down. You still get a lot of utility from carrying three upgraded shulker boxes on you.
+SS upgrades that depend on the shulker being a placed block (hoppers, fluid, etc.) won't function while equipped. This is by design; these upgrades simply don't work without placement. You still get all the other upgrades in mostly functional capacity. I have not found any gamebreaking bugs with this setup, but if you find any please report them.
+
+The SS Settings tab does not currently work, you must place the shulker down for that. Minor annoyance, im working on compat for that.
 
 ## Easy Shulker Boxes
 
